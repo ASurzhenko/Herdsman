@@ -9,9 +9,11 @@ public class Animal : MonoBehaviour
     public AnimalBehaviour Behaviour{get; private set;}
     public Transform target;
     private CircleCollider2D myCollider;
+    private bool ChangeDirectionAllowed;
     private void Awake() {
         myCollider = GetComponent<CircleCollider2D>();
         Behaviour = GetComponent<AnimalBehaviour>();
+        ChangeDirectionAllowed = true;
     }
     public void SetUp(IAnimal animal)
     {
@@ -19,10 +21,11 @@ public class Animal : MonoBehaviour
         Reward = animal.GetAnimalRewardScores();
     }
     private void Update() {
-          
-
-        if(!Visability.IsTargetVisible(transform.position))
+        if(!Visability.IsTargetVisible(transform.position) && ChangeDirectionAllowed)
         {
+            ChangeDirectionAllowed = false;
+            StartCoroutine(AllowChangeDirection());
+            print("CD Update");
             ChangeDirection();
         }   
     }
@@ -66,5 +69,10 @@ public class Animal : MonoBehaviour
         target = null;
         myCollider.isTrigger = true;
         gameObject.SetActive(false);
+    }
+    IEnumerator AllowChangeDirection()
+    {
+        yield return new WaitForSeconds(0.3f);
+        ChangeDirectionAllowed = true;
     }
 }

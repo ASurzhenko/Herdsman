@@ -3,14 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MoveState{Right, Left, Up, Down}
+public enum MoveDirection {Back, Forward}
 public class AnimalBehaviour : MonoBehaviour
 {
     private Dictionary<Type, IAnimalBehaviour> behavioursMap;
     public IAnimalBehaviour BehaviourCurrent{get; private set;}
     private float swithBehaviourTimer;
     private float swithTime;
+    private MoveState CurrentMove;
+    private List<MoveState> ProbablyMoves = new List<MoveState>();
     private void Start() {
-        swithTime = UnityEngine.Random.Range(3f, 6f);
+        swithTime = 1;
         InitBehaviours();
         SetBehaviourByDefault();
     }
@@ -52,7 +56,7 @@ public class AnimalBehaviour : MonoBehaviour
             swithBehaviourTimer += Time.deltaTime;
             if(swithBehaviourTimer >= swithTime)
             {
-                swithTime = UnityEngine.Random.Range(3f, 6f);
+                swithTime = 1;
                 swithBehaviourTimer = 0;
                 if(BehaviourCurrent != GetBehaviour<AnimalBehaviourIdle>())
                     SetBehaviourIdle();
@@ -61,22 +65,34 @@ public class AnimalBehaviour : MonoBehaviour
             }
         }    
     }
-    private void SetRandomMovementBehaviour()
+    public void SetRandomMovementBehaviour()
     {
-        int rand = UnityEngine.Random.Range(0, 4);
-        switch (rand)
+        ProbablyMoves.Clear();
+        if(transform.position.x > -1)
+            ProbablyMoves.Add(MoveState.Right);
+        else     
+            ProbablyMoves.Add(MoveState.Left);
+
+        if(transform.position.y > 0)   
+            ProbablyMoves.Add(MoveState.Down);
+        else     
+            ProbablyMoves.Add(MoveState.Up);
+        
+        CurrentMove = ProbablyMoves[UnityEngine.Random.Range(0, 2)];
+        switch (CurrentMove)
         {
-        case 0:
-            SetBehaviourMoveLeft();
-            break;
-        case 1:
-            SetBehaviourMoveRight();
-            break;
-        case 2:
-            SetBehaviourMoveUp();
-            break;
-        default: SetBehaviourMoveDown();
-            break;
+            case MoveState.Left:
+                SetBehaviourMoveLeft();
+                break;
+            case MoveState.Right:
+                SetBehaviourMoveRight();
+                break;
+            case MoveState.Up:
+                SetBehaviourMoveUp();
+                break;
+            case MoveState.Down:
+                SetBehaviourMoveDown();
+                break;
         }
     }
     public void SetBehaviourIdle()

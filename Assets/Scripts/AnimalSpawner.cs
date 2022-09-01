@@ -11,6 +11,7 @@ public class AnimalSpawner : MonoBehaviour
     private Vector2 cubeSize;
     private Vector2 cubeCenter;
     private List<GameObject> animalsPool = new List<GameObject>();
+    private int maxAnimalAmount = 8;
     private void Awake()
     {
         Transform cubeTrans = bc.GetComponent<Transform>();
@@ -65,6 +66,6 @@ public class AnimalSpawner : MonoBehaviour
     }
     private bool CanSpawn()
     {
-        return animalsPool.Count == 0 || animalsPool.Select(x => x).Where(x => x.activeInHierarchy).ToArray().Length < 8;
+        return animalsPool.Count == 0 || animalsPool.Select(x => x).Where(x => x.activeInHierarchy).ToArray().Length < maxAnimalAmount;
     }
 }
